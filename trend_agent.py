@@ -46,7 +46,7 @@ def fetch_news(count=NEWS_COUNT):
         return "뉴스 수집 실패"
 
 def analyze_with_gemini(news, count=NEWS_COUNT):
-    print("🚀 제미나이가 은실님을 위해 뉴스를 분석하고 있습니다... (발열 걱정 NO!)")
+    print("🚀 제미나이가 은실님을 위해 뉴스를 분석하고 있습니다...")
     
     prompt = f"""
     [지침: 엄격한 사실 기반 요약]
