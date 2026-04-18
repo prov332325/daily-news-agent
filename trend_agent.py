@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 import sys, os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()  # .env 파일 읽어오기
 
@@ -75,6 +76,55 @@ def analyze_with_gemini(news, count=NEWS_COUNT):
     print(f"✅ 분석 완료! (소요시간: {end_time - start_time:.2f}초)")
     return response.text
 
+
+# ============================================
+# 디스코드로 전송하는 함수
+# ============================================
+def send_to_discord(report):
+    print("💬 디스코드로 전송 중...")
+    
+    webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+    
+    if not webhook_url:
+        print("⚠️ DISCORD_WEBHOOK_URL이 없습니다. 전송을 건너뜁니다.")
+        return
+    
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    # 디스코드는 한 메시지당 2000자 제한이 있어서 길면 잘라야 함
+    header = f"## ✨ 오늘의 AI 트렌드 리포트 ({today}) ✨\n\n"
+    
+    # 본문이 길면 여러 메시지로 쪼개서 보내기
+    chunks = []
+    current = header
+    
+    for line in report.split('\n'):
+        if len(current) + len(line) + 1 > 1900:  # 여유 100자 남기기
+            chunks.append(current)
+            current = ""
+        current += line + "\n"
+        
+    if current:
+        chunks.append(current)
+        
+    
+    # 각 청크를 순서대로 전송
+    try:
+        for i, chunk in enumerate(chunks):
+            response = requests.post(
+                webhook_url,
+                json={"content": chunk},
+                headers={'Content-Type': 'application/json'}
+            )
+            response.raise_for_status()
+        print(f"✅ 디스코드 전송 완료! ({len(chunks)}개 메시지)")
+    except Exception as e:
+        print(f"❌ 디스코드 전송 실패: {e}")
+
+# ============================================
+# 메인 실행 함수
+# ============================================
+
 if __name__ == "__main__":
     # 뉴스 가져오기
     news_data = fetch_news()
@@ -88,3 +138,6 @@ if __name__ == "__main__":
     print("="*50)
     print(report)
     print("="*50)
+    
+    # 💬 디스코드 전송!
+    send_to_discord(report)

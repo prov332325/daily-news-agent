@@ -25,4 +25,5 @@ jobs:
       - name: Run news agent
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python trend_agent.py
