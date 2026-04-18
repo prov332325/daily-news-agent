@@ -1,4 +1,8 @@
 # 🗞️ Daily News Agent
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-purple?logo=google)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Automated-2088FF?logo=githubactions&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 > 매일 아침, IT 뉴스를 AI가 요약해서 디스코드로 배달해주는 자동화 에이전트
 
