@@ -29,12 +29,11 @@ def fetch_news(count=NEWS_COUNT):
     # url = "https://news.hada.io/rss/news"
     url = "https://yozm.wishket.com/magazine/feed/"
     # headers = {'User-Agent': 'Mozilla/5.0'}
+    url = "https://yozm.wishket.com/magazine/feed/"
+    # headers는 위에서 말한 보강된 버전으로 사용하세요!
     headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-    'Accept': 'application/rss+xml, application/xml;q=0.9, */*;q=0.8',
-    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Referer': 'https://yozm.wishket.com/'
-}
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+    }
     
     max_retries = 3 #최대 3번 시도
     for i in range (max_retries):
