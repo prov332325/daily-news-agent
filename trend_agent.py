@@ -28,23 +28,34 @@ def fetch_news(count=NEWS_COUNT):
     print(f"🔍 GeekNews에서 최신 {count}개 소식을 가져오는 중...")
     # url = "https://news.hada.io/rss/news"
     url = "https://yozm.wishket.com/magazine/feed/"
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    # headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    max_retries = 3 #최대 3번 시도
+    for i in range (max_retries):
+        try:
+            print(f"🔍 뉴스 가져오는 중... (시도 {i+1}/{max_retries})")
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            feed = feedparser.parse(response.content)
+            
+            if feed.entries:
+                news_items = [{"title": entry.title, "link": entry.link} for entry in feed.entries[:count]]
+                print(f"✅ 뉴스 {len(news_items)}개 수집 완료!")
+                return news_items
+            
+            print("⚠️ 데이터가 비어있습니다. 잠시 후 재시도합니다.")
 
-    try:
-        response = requests.get(url, headers=headers)
-        feed = feedparser.parse(response.content)
-
-        if not feed.entries:
-            print("⚠️ 뉴스를 찾지 못했습니다. (데이터가 비어있음)")
-            return []
-
-        news_items = [{"title": entry.title, "link": entry.link} for entry in feed.entries[:count]]
-        print(f"✅ 뉴스 {len(news_items)}개 수집 완료!")
-        return news_items
-
-    except Exception as e:
-        print(f"❌ 뉴스 수집 중 에러 발생: {e}")
-        return []
+        except Exception as e:
+            print(f"❌ 시도 {i+1}번째 실패, 뉴스 수집 중 에러 발생: {e}")
+        
+        # 마지막 시도가 아니면 5초 쉬었다가 다시 시도
+        if i < max_retries - 1:
+            time.sleep(5)
+            
+    return [] # 결국 다 실패하면 빈 리스트 반환
 
 def analyze_with_gemini(news_items, count=NEWS_COUNT):
     print("🚀 제미나이가 은실님을 위해 뉴스를 분석하고 있습니다...")
@@ -145,7 +156,7 @@ if __name__ == "__main__":
 
     if not news_items:
         print("❌ 뉴스가 없어 종료합니다.")
-        sys.exit(1)
+        sys.exit(0)
 
     report = analyze_with_gemini(news_items)
 
