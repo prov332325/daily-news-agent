@@ -41,15 +41,18 @@ def fetch_news(count=NEWS_COUNT):
         try:
             print(f"🔍 뉴스 가져오는 중... (시도 {i+1}/{max_retries})")
             response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-            feed = feedparser.parse(response.content)
             
+            # 403 에러 등이 발생하면 여기서 바로 Exception으로 넘어갑니다.
+            response.raise_for_status()
+            
+            feed = feedparser.parse(response.content)
             if feed.entries:
                 news_items = [{"title": entry.title, "link": entry.link} for entry in feed.entries[:count]]
                 print(f"✅ 뉴스 {len(news_items)}개 수집 완료!")
                 return news_items
-            
-            print("⚠️ 데이터가 비어있습니다. 잠시 후 재시도합니다.")
+            else:
+                print("⚠️ 데이터가 비어있습니다. 잠시 후 재시도합니다.")
+                return [], True
 
         except Exception as e:
             print(f"❌ 시도 {i+1}번째 실패, 뉴스 수집 중 에러 발생: {e}")
@@ -58,7 +61,7 @@ def fetch_news(count=NEWS_COUNT):
         if i < max_retries - 1:
             time.sleep(5)
             
-    return [] # 결국 다 실패하면 빈 리스트 반환
+    return [], False # 결국 다 실패하면 빈 리스트 반환
 
 def analyze_with_gemini(news_items, count=NEWS_COUNT):
     print("🚀 제미나이가 은실님을 위해 뉴스를 분석하고 있습니다...")
@@ -155,11 +158,15 @@ def send_to_discord(news_items, report):
 # ============================================
 
 if __name__ == "__main__":
-    news_items = fetch_news()
+    news_items, is_success = fetch_news()
+
+    if not is_success:
+        print("🚨 서버 차단 또는 네트워크 에러로 뉴스 수집에 실패했습니다!")
+        sys.exit(1) # 여기서 에러를 내야 깃허브 액션에 빨간 불이 들어옴
 
     if not news_items:
-        print("❌ 뉴스가 없어 종료합니다.")
-        sys.exit(0)
+        print("📭 접속은 성공했으나, 오늘 올라온 새 뉴스가 없습니다.")
+        sys.exit(0) # 이건 정상 상황이므로 초록 불
 
     report = analyze_with_gemini(news_items)
 
