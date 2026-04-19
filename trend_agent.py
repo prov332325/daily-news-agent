@@ -27,7 +27,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 def fetch_news(count=NEWS_COUNT):
     print(f"🔍 GeekNews에서 최신 {count}개 소식을 가져오는 중...")
     # url = "https://news.hada.io/rss/news"
-    url = "https://yozm.wishket.com/magazine/feed/"
+    # url = "https://yozm.wishket.com/magazine/feed/"
     # headers = {'User-Agent': 'Mozilla/5.0'}
     url = "https://yozm.wishket.com/magazine/feed/"
     # headers는 위에서 말한 보강된 버전으로 사용하세요!
@@ -48,7 +48,7 @@ def fetch_news(count=NEWS_COUNT):
             if feed.entries:
                 news_items = [{"title": entry.title, "link": entry.link} for entry in feed.entries[:count]]
                 print(f"✅ 뉴스 {len(news_items)}개 수집 완료!")
-                return news_items
+                return news_items, True
             else:
                 print("⚠️ 데이터가 비어있습니다. 잠시 후 재시도합니다.")
                 return [], True
