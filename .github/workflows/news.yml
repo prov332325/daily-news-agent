@@ -3,7 +3,7 @@ name: Daily IT News Agent
 on:
   schedule:
     # - cron: '0 0 * * *'  # 매일 UTC 00:00 = 한국시간 오전 9시
-    - cron: '15 3 * * *'  # 15분 3시 (UTC) = 12:15 (KST)
+    - cron: '45 3 * * *'  # 45분 3시 (UTC) = 12:45 (KST)
   workflow_dispatch:  # 깃허브에서 수동 실행 버튼
 
 jobs:
