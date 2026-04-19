@@ -26,10 +26,9 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 def fetch_news(count=NEWS_COUNT):
     print(f"🔍 GeekNews에서 최신 {count}개 소식을 가져오는 중...")
-    # url = "https://news.hada.io/rss/news"
-    # url = "https://yozm.wishket.com/magazine/feed/"
+    url = "https://news.hada.io/rss/news"
     # headers = {'User-Agent': 'Mozilla/5.0'}
-    url = "https://yozm.wishket.com/magazine/feed/"
+    # url = "https://yozm.wishket.com/magazine/feed/"
     # headers는 위에서 말한 보강된 버전으로 사용하세요!
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
