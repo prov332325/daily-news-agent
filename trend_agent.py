@@ -85,12 +85,23 @@ def analyze_with_gemini(news_items, count=NEWS_COUNT):
     """
 
     start_time = time.time()
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=prompt
-    )
-    end_time = time.time()
-
+    
+    max_retries = 3
+    for i in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
+            return response.text
+        except Exception as e:
+            if "503" in str(e) or "high demand" in str(e):
+                print(f"⚠️ 제미나이 서버가 바쁩니다. (시도 {i+1}/{max_retries}) 10초 후 재시도...")
+                time.sleep(10)
+            else:
+                print(f"❌ 제미나이 호출 중 예상치 못한 에러: {e}")
+                raise e # 503이 아닌 다른 심각한 에러는 바로 중단
+    end_time = time.time() 
     print(f"✅ 분석 완료! (소요시간: {end_time - start_time:.2f}초)")
     return response.text
 
